@@ -34,7 +34,7 @@ for combo in combinations(files, 2):
         (
             Path(combo[0]).stem, 
             Path(combo[1]).stem, 
-            accum/len(reviewers_of_both), 
+            round(accum/len(reviewers_of_both), 4), 
             len(reviewers_of_both)
         )
     )
