@@ -5,14 +5,14 @@ from itertools import combinations
 
 import networkx as nx
 
-reviewers: dict[str, int] = defaultdict(lambda: 0)
+reviewers = defaultdict(lambda: 0)
 "keys are reviewer ids, values are how many movies they reviewed"
 
-reviewers_by_movie: dict[str, set[str]] = defaultdict(set)
+reviewers_by_movie = defaultdict(set)
 """keys are movie data file names, values are the set of userIDs for people who
 reviewed that movie"""
 
-scores: dict[tuple[str, str], int] = {}
+scores = {}
 """keys are a (userID, movie data file name) tuple, values are the rating that
 user gave that movie out of 10"""
 
@@ -54,7 +54,7 @@ for combo in combinations(map(lambda x: x.stem, files), 2):
 
 combination_row.sort(key=lambda x: x[2])
 
-review_counts: dict[int, int] = defaultdict(lambda: 0)
+review_counts = defaultdict(lambda: 0)
 "keys are quantities of reviews, values are how many reviewers made that quantity of reviews"
 for review_count in reviewers.values():
     assert review_count <= len(files)
