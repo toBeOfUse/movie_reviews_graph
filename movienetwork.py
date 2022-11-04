@@ -5,6 +5,12 @@ from itertools import combinations
 
 import networkx as nx
 
+# IMPORT THESE:
+
+movie_names = []
+"""list of movie names, currently taken from the names of the files in the
+review_data folder"""
+
 reviewers = defaultdict(lambda: 0)
 "keys are reviewer ids, values are how many movies they reviewed"
 
@@ -17,7 +23,19 @@ scores = {}
 user gave that movie out of 10"""
 
 total_review_count = 0
+
+network = nx.Graph()
+"""NetworkX Graph object with movie file names as nodes and weighted edges
+between them; the weights are 1/(the average distance between reviews)"""
+
+combination_row = []
+"""each table row is a movie data file name, another movie data file name, the
+average difference between same-author reviews of the two movies, and the
+number of same-author reviews of the two movies"""
+
+
 files = list(Path(".").glob("review_data/*.json"))
+movie_names = [f.stem for f in files]
 for file_path in files:
     with open(file_path, encoding="utf-8") as file:
         reviews = json.load(file)
@@ -32,11 +50,6 @@ for file_path in files:
             scores[(review["userID"], file_path.stem)] = review["rating"]
             seen_reviewers.add(review["userID"])
 
-network = nx.Graph()
-combination_row = []
-"""each table row is a movie data file name, another movie data file name, the
-average difference between same-author reviews of the two movies, and the
-number of same-author reviews of the two movies"""
 for combo in combinations(map(lambda x: x.stem, files), 2):
     reviewers_of_both = reviewers_by_movie[combo[0]] & reviewers_by_movie[combo[1]]
     accum = 0
