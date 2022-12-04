@@ -34,11 +34,16 @@ average difference between same-author reviews of the two movies, and the
 number of same-author reviews of the two movies"""
 
 
-files = list(Path(".").glob("review_data/*.json"))
+files = list(Path(".").glob("movie_data/*.json"))
 movie_names = [f.stem for f in files]
+movie_attrs = {}
 for file_path in files:
     with open(file_path, encoding="utf-8") as file:
-        reviews = json.load(file)
+        movie = json.load(file)
+    reviews = movie["reviews"]
+    del movie["reviews"]
+    movie_attrs[file_path.stem] = movie
+    network.add_node(movie["title"], **movie)
     # keeping track of what reviewers have reviewed this movie so if they have a
     # double review we can skip it... kind of weird
     seen_reviewers = set()
@@ -63,7 +68,11 @@ for combo in combinations(map(lambda x: x.stem, files), 2):
             len(reviewers_of_both)
         )
     )
-    network.add_edge(combo[0], combo[1], weight = 1/avg_distance)
+    network.add_edge(
+        movie_attrs[combo[0]]["title"],
+        movie_attrs[combo[1]]["title"],
+        weight = 1/avg_distance
+    )
 
 combination_row.sort(key=lambda x: x[2])
 
