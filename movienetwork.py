@@ -8,8 +8,8 @@ import networkx as nx
 # IMPORT THESE:
 
 movie_names = []
-"""list of movie names, currently taken from the names of the files in the
-review_data folder"""
+"""list of movie file names from the names of the files in the
+review_data/movie_data folders"""
 
 reviewers = defaultdict(lambda: 0)
 "keys are reviewer ids, values are how many movies they reviewed"
@@ -25,25 +25,40 @@ user gave that movie out of 10"""
 total_review_count = 0
 
 network = nx.Graph()
-"""NetworkX Graph object with movie file names as nodes and weighted edges
-between them; the weights are 1/(the average distance between reviews)"""
+"""NetworkX Graph object with movie titles as nodes and weighted edges
+between them; the weights are 1/(the average distance between reviews). each
+node also has data for the keys filename, title, genres, actors, director, and
+year, so you can do this:
+
+network.nodes["Batman"]["director"]
+
+or
+
+for node, attributes in network.node.items():
+    print(node, "was directed by", attributes["director"])
+
+"""
 
 combination_row = []
 """each table row is a movie data file name, another movie data file name, the
 average difference between same-author reviews of the two movies, and the
 number of same-author reviews of the two movies"""
 
+movie_attrs = {}
+"""Extra data for each movie; the keys are the file names from
+movie_data/review_data, the values are the corresponding dicts of data from the
+movie_data files: title, genres, actors, director, and year"""
+
 
 files = list(Path(".").glob("movie_data/*.json"))
 movie_names = [f.stem for f in files]
-movie_attrs = {}
 for file_path in files:
     with open(file_path, encoding="utf-8") as file:
         movie = json.load(file)
     reviews = movie["reviews"]
     del movie["reviews"]
     movie_attrs[file_path.stem] = movie
-    network.add_node(movie["title"], **movie)
+    network.add_node(movie["title"], **movie, filename=file_path.stem)
     # keeping track of what reviewers have reviewed this movie so if they have a
     # double review we can skip it... kind of weird
     seen_reviewers = set()

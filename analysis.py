@@ -13,4 +13,6 @@ def draw_graph():
     plt.show()
 
 if __name__ == "__main__":
+    for node, attributes in network.nodes.items():
+        print(node, "was directed by", attributes["director"])
     draw_graph()
