@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 networkx = {extras = ["default"], version = "*"}
+requests = "*"
 
 [dev-packages]
 
